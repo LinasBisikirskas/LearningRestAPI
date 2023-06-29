@@ -17,7 +17,6 @@ import jakarta.persistence.Table;
 @ToString
 
 public class Building {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -26,5 +25,4 @@ public class Building {
     private int squareMeters;
     private int buildingValue;
     private String buildingType;
-
 }

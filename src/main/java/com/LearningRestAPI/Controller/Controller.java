@@ -23,14 +23,13 @@ public class Controller {
     @Autowired
     private BuildingRepo buildingRepo;
 
-    @GetMapping("/getAllBuildings")
+    @GetMapping("/building-management/managed-buildings")
     public ResponseEntity<List<Building>> getAllBuildings() {
         try {
             List<Building> buildingList = new ArrayList<>();
             buildingRepo.findAll().forEach(buildingList::add);
-
             if (buildingList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
             }
             return new ResponseEntity<>(buildingList, HttpStatus.OK);
         } catch (Exception ex) {
@@ -38,26 +37,22 @@ public class Controller {
         }
     }
 
-    @GetMapping("/getBuildingById/{id}")
-    public ResponseEntity<Building> getBuildingByID(@PathVariable Long id) {
+    @GetMapping("/building-management/managed-buildings/{id}")
+    public ResponseEntity<Building> getBuildingById(@PathVariable Long id) {
         Optional<Building> buildingData = buildingRepo.findById(id);
-
         if (buildingData.isPresent()) {
             return new ResponseEntity<>(buildingData.get(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/addBuilding")
+    @PostMapping("/building-management/managed-buildings")
     public ResponseEntity<Building> addBuilding(@RequestBody Building building) {
         Building buildingObj = buildingRepo.save(building);
-
         return new ResponseEntity<>(buildingObj, HttpStatus.OK);
-
-
     }
 
-    @PostMapping("/updateBuildingById/{id}")
+    @PostMapping("/building-management/managed-buildings/{id}")
     public ResponseEntity<Building> updateBuildingById(@PathVariable Long id, @RequestBody Building newBuildingData) {
         Optional<Building> oldBuildingData = buildingRepo.findById(id);
         if (oldBuildingData.isPresent()) {
@@ -67,17 +62,20 @@ public class Controller {
             updatedBuildingData.setSquareMeters(newBuildingData.getSquareMeters());
             updatedBuildingData.setBuildingValue(newBuildingData.getBuildingValue());
             updatedBuildingData.setBuildingType(newBuildingData.getBuildingType());
-
             Building buildingObj = buildingRepo.save(updatedBuildingData);
             return new ResponseEntity<>(buildingObj, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/deteleBuildingById/{id}")
+    @DeleteMapping("/building-management/managed-buildings/{id}")
     public ResponseEntity<Object> deleteBuildingById(@PathVariable Long id) {
-        buildingRepo.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Optional<Building> building = buildingRepo.findById(id);
+        if (building.isPresent()) {
+            buildingRepo.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
-
 }

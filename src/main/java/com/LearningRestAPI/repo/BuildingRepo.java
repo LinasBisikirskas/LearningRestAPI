@@ -7,5 +7,4 @@ import com.LearningRestAPI.model.Building;
 
 @Repository
 public interface BuildingRepo extends JpaRepository<Building, Long> {
-    
 }
